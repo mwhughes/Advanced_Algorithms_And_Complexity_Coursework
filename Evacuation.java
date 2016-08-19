@@ -20,22 +20,22 @@ public class Evacuation {
     private static int maxFlow(FlowGraph graph, int from, int to) {
         int flow = 0;
         /* your code goes here */
-        HashMap<Integer, Edge> test =  bfs(graph, from, to);
+        HashMap<Integer, Integer> test =  bfs(graph, from, to);
         tracePath( graph, test, from, to);
         
         return flow;
     }
     
-    private static ArrayList<Edge> getEdgesFrom(FlowGraph graph, int curVertex)
+    private static ArrayList<Integer> getEdgesFrom(FlowGraph graph, int curVertex)
     {
-    	ArrayList<Edge> edgesFrom = new ArrayList<Edge>();
+    	ArrayList<Integer> edgesFrom = new ArrayList<Integer>();
     	List<Integer> idsOfEdgesFromcurVertex = 	graph.getIds(curVertex);
     	for (int numOfEdge : idsOfEdgesFromcurVertex)
     	{
     		Edge neighborEdge = graph.getEdge(numOfEdge);
     		if (neighborEdge.flow < neighborEdge.capacity)
     		{
-    			edgesFrom.add(neighborEdge);
+    			edgesFrom.add(numOfEdge);
     		}
     	}
     	
@@ -43,29 +43,28 @@ public class Evacuation {
     	
     }
     
-    private static void tracePath(FlowGraph graph, HashMap<Integer, Edge> pathMap, int from, int to )
+    private static void tracePath(FlowGraph graph, HashMap<Integer, Integer> pathMap, int from, int to )
     {
     	if (null != pathMap  )
     	{
-    		Edge curEdge = pathMap.get(to);
+    		int curNumOfEdge = pathMap.get(to);
+    		Edge curEdge = graph.getEdge(curNumOfEdge);
+    		int minMaxFlowforPath = 0;
     		while (curEdge.from != from)
     		{
     			 System.out.println("Edge:  " + curEdge.from + " " + curEdge.to + " " +curEdge.capacity + " " + curEdge.flow);
-    			 curEdge = pathMap.get(curEdge.from);
+    			 curNumOfEdge = pathMap.get(curEdge.from);
+    			 curEdge = graph.getEdge(curNumOfEdge);
     		}
-    		
-    	
-    		
-    		
     	}
     	
     }
-    
-    private static HashMap<Integer, Edge> bfs(FlowGraph graph, int from, int to)
+    //Hashmap maps each integer representing a vertex to the integer id of the edge that was traversed to get to that vertex
+    private static HashMap<Integer, Integer> bfs(FlowGraph graph, int from, int to)
     {
     	//ArrayList<Edge> path = new ArrayList<Edge> ();
     	HashSet<Integer> visited = new HashSet<Integer>();
-    	HashMap<Integer, Edge> mapOfParentEdge = new HashMap<Integer, Edge>();
+    	HashMap<Integer, Integer> mapOfParentEdge = new HashMap<Integer, Integer>();
     	LinkedList<Integer> queue = new LinkedList<Integer>();
     	int curVertex = from;
     	queue.add(curVertex);
@@ -76,11 +75,12 @@ public class Evacuation {
     		//System.out.println( curVertex);
     		if (curVertex==to){return mapOfParentEdge;}
     		
-    		ArrayList<Edge> curEdges = getEdgesFrom(graph, curVertex);
-    		for (Edge curEdge:curEdges){
+    		ArrayList<Integer> curEdges = getEdgesFrom(graph, curVertex);
+    		for (Integer curNumOfEdge:curEdges){
+    			Edge curEdge = graph.getEdge(curNumOfEdge);
     			if (! visited.contains(curEdge.to))
     			{
-    				mapOfParentEdge.put(curEdge.to, curEdge);
+    				mapOfParentEdge.put(curEdge.to, curNumOfEdge);
     				queue.add(curEdge.to);
     			}
     		}
