@@ -13,6 +13,11 @@ public class Evacuation {
         in = new FastScanner();
 
         FlowGraph graph = readGraph();
+        
+        List<Integer> edgeIDs = getEdgesFrom(graph, 0);
+        //System.out.println(edgeIDs);
+       
+        
         System.out.println(maxFlow(graph, 0, graph.size() - 1));
     }
 
@@ -21,14 +26,31 @@ public class Evacuation {
         int flow = 0;
         /* your code goes here */
         HashMap<Integer, Integer> test =  bfs(graph, from, to);
-        tracePath( graph, test, from, to);
+        FlowGraph newGraph = null;
+        while (null != test)
+        {
+        	//System.out.println("test");
+        	newGraph = tracePath( graph, test, from, to);
+        	test =  bfs(newGraph, from, to);
+        	
+        }
+        //System.out.println("test3");
         
+        List<Integer> edgeIDs = newGraph.getIds(0);
+        //System.out.println(edgeIDs);
+        for (int edgeID : edgeIDs)
+        {
+        	Edge curEdge = newGraph.getEdge(edgeID);
+        	flow += curEdge.flow;
+        	//System.out.println("Flow Test:  " + curEdge.from + " " + curEdge.to + " " +curEdge.capacity + " " + curEdge.flow);
+        }
+                                 
         return flow;
     }
     
     private static ArrayList<Integer> getEdgesFrom(FlowGraph graph, int curVertex)
     {
-    	ArrayList<Integer> edgesFrom = new ArrayList<Integer>();
+       	ArrayList<Integer> edgesFrom = new ArrayList<Integer>();
     	List<Integer> idsOfEdgesFromcurVertex = 	graph.getIds(curVertex);
     	for (int numOfEdge : idsOfEdgesFromcurVertex)
     	{
@@ -38,10 +60,8 @@ public class Evacuation {
     		{
     			edgesFrom.add(numOfEdge);
     		}
-    		
-    		
-    	}
-    	
+       	}
+    
     	return edgesFrom;
     	
     }
@@ -50,41 +70,57 @@ public class Evacuation {
     
     private static FlowGraph tracePath(FlowGraph graph, HashMap<Integer, Integer> pathMap, int from, int to )
     {
+    	  List<Integer> edgeIDs = getEdgesFrom(graph, 0);
+          //System.out.println(edgeIDs);
+          
     	if (null != pathMap  )
     	{
     		int curNumOfEdge = pathMap.get(to);
     		Edge curEdge = graph.getEdge(curNumOfEdge);
     		int minMaxFlowForPath = Integer.MAX_VALUE;
     		while (curEdge.from != from)
-    		{    			 System.out.println("Edge:  " + curEdge.from + " " + curEdge.to + " " +curEdge.capacity + " " + curEdge.flow);
-    			 curNumOfEdge = pathMap.get(curEdge.from);
+    		{    			// System.out.println("Edge:  " + curEdge.from + " " + curEdge.to + " " +curEdge.capacity + " " + curEdge.flow);
+    		if (curEdge.capacity <minMaxFlowForPath){
+				 minMaxFlowForPath = curEdge.capacity;
+			 } 
+    			curNumOfEdge = pathMap.get(curEdge.from);
     			 curEdge = graph.getEdge(curNumOfEdge);
-    			 if (curEdge.capacity <minMaxFlowForPath){
-    				 minMaxFlowForPath = curEdge.capacity;
-    			 }
+    			 
     		}
-    		System.out.println("minMax: " +  minMaxFlowForPath );
+    		//execute for source edge
+    		if (curEdge.capacity <minMaxFlowForPath){
+				 minMaxFlowForPath = curEdge.capacity;
+			 } 
+    		
+    		//System.out.println("minMax: " +  minMaxFlowForPath );
     	
     	
-    	curNumOfEdge = pathMap.get(to);
-		curEdge = graph.getEdge(curNumOfEdge);
-		while (curEdge.from != from)
-		{   
+	    	curNumOfEdge = pathMap.get(to);
+			curEdge = graph.getEdge(curNumOfEdge);
+			while (curEdge.from != from)
+			{   
 			
 			graph.addFlow(curNumOfEdge, minMaxFlowForPath);
 			curEdge.capacity = curEdge.capacity - minMaxFlowForPath;
 			Edge edgeMate = graph.edges.get(curNumOfEdge ^ 1);
 			edgeMate.capacity += minMaxFlowForPath;
-			System.out.println("Edge2:  " + curEdge.from + " " + curEdge.to + " " +curEdge.capacity + " " + curEdge.flow);
+			//System.out.println("Edge2:  " + curEdge.from + " " + curEdge.to + " " +curEdge.capacity + " " + curEdge.flow);
 			 
 			curNumOfEdge = pathMap.get(curEdge.from);
 			curEdge = graph.getEdge(curNumOfEdge);
 			
-			System.out.println("EdgeMate:  " + edgeMate.from + " " + edgeMate.to + " " +edgeMate.capacity + " " + edgeMate.flow);
+			//System.out.println("EdgeMate:  " + edgeMate.from + " " + edgeMate.to + " " +edgeMate.capacity + " " + edgeMate.flow);
 			 
-		}
-		System.out.println("minMax: " +  minMaxFlowForPath );
-    }
+			}
+			
+			// execute for source edge
+			graph.addFlow(curNumOfEdge, minMaxFlowForPath);
+			curEdge.capacity = curEdge.capacity - minMaxFlowForPath;
+			Edge edgeMate = graph.edges.get(curNumOfEdge ^ 1);
+			edgeMate.capacity += minMaxFlowForPath;
+			
+			//System.out.println("minMax: " +  minMaxFlowForPath );
+    	}
     	return graph;
 	}
     	
@@ -106,6 +142,7 @@ public class Evacuation {
     	while (!queue.isEmpty())
     	{
     		curVertex = queue.removeFirst();
+    		visited.add(curVertex);
     		//System.out.println( curVertex);
     		if (curVertex==to){return mapOfParentEdge;}
     		
@@ -146,7 +183,7 @@ public class Evacuation {
             this.to = to;
             this.capacity = capacity;
             this.flow = 0;
-            System.out.println(from + " " + to + " " + capacity);
+           // System.out.println(from + " " + to + " " + capacity);
         }
     }
 
