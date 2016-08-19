@@ -14,7 +14,7 @@ public class Evacuation {
 
         FlowGraph graph = readGraph();
         
-        List<Integer> edgeIDs = getEdgesFrom(graph, 0);
+        //List<Integer> edgeIDs = getEdgesFrom(graph, 0);
         //System.out.println(edgeIDs);
        
         
@@ -35,7 +35,7 @@ public class Evacuation {
         	
         }
         //System.out.println("test3");
-        
+        if (null == newGraph){return 0;}
         List<Integer> edgeIDs = newGraph.getIds(0);
         //System.out.println(edgeIDs);
         for (int edgeID : edgeIDs)
