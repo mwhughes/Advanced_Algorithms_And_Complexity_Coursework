@@ -33,32 +33,66 @@ public class Evacuation {
     	for (int numOfEdge : idsOfEdgesFromcurVertex)
     	{
     		Edge neighborEdge = graph.getEdge(numOfEdge);
-    		if (neighborEdge.flow < neighborEdge.capacity)
+    		
+    		if (0 < neighborEdge.capacity)
     		{
     			edgesFrom.add(numOfEdge);
     		}
+    		
+    		
     	}
     	
     	return edgesFrom;
     	
     }
     
-    private static void tracePath(FlowGraph graph, HashMap<Integer, Integer> pathMap, int from, int to )
+   // private static FlowGraph computeResidual()
+    
+    private static FlowGraph tracePath(FlowGraph graph, HashMap<Integer, Integer> pathMap, int from, int to )
     {
     	if (null != pathMap  )
     	{
     		int curNumOfEdge = pathMap.get(to);
     		Edge curEdge = graph.getEdge(curNumOfEdge);
-    		int minMaxFlowforPath = 0;
+    		int minMaxFlowForPath = Integer.MAX_VALUE;
     		while (curEdge.from != from)
-    		{
-    			 System.out.println("Edge:  " + curEdge.from + " " + curEdge.to + " " +curEdge.capacity + " " + curEdge.flow);
+    		{    			 System.out.println("Edge:  " + curEdge.from + " " + curEdge.to + " " +curEdge.capacity + " " + curEdge.flow);
     			 curNumOfEdge = pathMap.get(curEdge.from);
     			 curEdge = graph.getEdge(curNumOfEdge);
+    			 if (curEdge.capacity <minMaxFlowForPath){
+    				 minMaxFlowForPath = curEdge.capacity;
+    			 }
     		}
-    	}
+    		System.out.println("minMax: " +  minMaxFlowForPath );
     	
+    	
+    	curNumOfEdge = pathMap.get(to);
+		curEdge = graph.getEdge(curNumOfEdge);
+		while (curEdge.from != from)
+		{   
+			
+			graph.addFlow(curNumOfEdge, minMaxFlowForPath);
+			curEdge.capacity = curEdge.capacity - minMaxFlowForPath;
+			Edge edgeMate = graph.edges.get(curNumOfEdge ^ 1);
+			edgeMate.capacity += minMaxFlowForPath;
+			System.out.println("Edge2:  " + curEdge.from + " " + curEdge.to + " " +curEdge.capacity + " " + curEdge.flow);
+			 
+			curNumOfEdge = pathMap.get(curEdge.from);
+			curEdge = graph.getEdge(curNumOfEdge);
+			
+			System.out.println("EdgeMate:  " + edgeMate.from + " " + edgeMate.to + " " +edgeMate.capacity + " " + edgeMate.flow);
+			 
+		}
+		System.out.println("minMax: " +  minMaxFlowForPath );
     }
+    	return graph;
+	}
+    	
+    	
+    	//Add Flow to g
+    	
+    	
+    
     //Hashmap maps each integer representing a vertex to the integer id of the edge that was traversed to get to that vertex
     private static HashMap<Integer, Integer> bfs(FlowGraph graph, int from, int to)
     {
@@ -85,10 +119,7 @@ public class Evacuation {
     			}
     		}
     		
-    		
-    		
-    		
-    	}
+   	}
       	
     	
     	
