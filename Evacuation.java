@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Arrays;
+import java.util.*;
 
 public class Evacuation {
     private static FastScanner in;
@@ -15,12 +16,83 @@ public class Evacuation {
         System.out.println(maxFlow(graph, 0, graph.size() - 1));
     }
 
+    
     private static int maxFlow(FlowGraph graph, int from, int to) {
         int flow = 0;
         /* your code goes here */
-        
+        HashMap<Integer, Edge> test =  bfs(graph, from, to);
+        tracePath( graph, test, from, to);
         
         return flow;
+    }
+    
+    private static ArrayList<Edge> getEdgesFrom(FlowGraph graph, int curVertex)
+    {
+    	ArrayList<Edge> edgesFrom = new ArrayList<Edge>();
+    	List<Integer> idsOfEdgesFromcurVertex = 	graph.getIds(curVertex);
+    	for (int numOfEdge : idsOfEdgesFromcurVertex)
+    	{
+    		Edge neighborEdge = graph.getEdge(numOfEdge);
+    		if (neighborEdge.flow < neighborEdge.capacity)
+    		{
+    			edgesFrom.add(neighborEdge);
+    		}
+    	}
+    	
+    	return edgesFrom;
+    	
+    }
+    
+    private static void tracePath(FlowGraph graph, HashMap<Integer, Edge> pathMap, int from, int to )
+    {
+    	if (null != pathMap  )
+    	{
+    		Edge curEdge = pathMap.get(to);
+    		while (curEdge.from != from)
+    		{
+    			 System.out.println("Edge:  " + curEdge.from + " " + curEdge.to + " " +curEdge.capacity + " " + curEdge.flow);
+    			 curEdge = pathMap.get(curEdge.from);
+    		}
+    		
+    	
+    		
+    		
+    	}
+    	
+    }
+    
+    private static HashMap<Integer, Edge> bfs(FlowGraph graph, int from, int to)
+    {
+    	//ArrayList<Edge> path = new ArrayList<Edge> ();
+    	HashSet<Integer> visited = new HashSet<Integer>();
+    	HashMap<Integer, Edge> mapOfParentEdge = new HashMap<Integer, Edge>();
+    	LinkedList<Integer> queue = new LinkedList<Integer>();
+    	int curVertex = from;
+    	queue.add(curVertex);
+    	
+    	while (!queue.isEmpty())
+    	{
+    		curVertex = queue.removeFirst();
+    		//System.out.println( curVertex);
+    		if (curVertex==to){return mapOfParentEdge;}
+    		
+    		ArrayList<Edge> curEdges = getEdgesFrom(graph, curVertex);
+    		for (Edge curEdge:curEdges){
+    			if (! visited.contains(curEdge.to))
+    			{
+    				mapOfParentEdge.put(curEdge.to, curEdge);
+    				queue.add(curEdge.to);
+    			}
+    		}
+    		
+    		
+    		
+    		
+    	}
+      	
+    	
+    	
+    	return null;
     }
 
     static FlowGraph readGraph() throws IOException {
