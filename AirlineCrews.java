@@ -4,14 +4,15 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.*;
 import java.util.StringTokenizer;
 
-public class AirlineCrews {
+public class AirlineCrews { // Need to change back to the original class name
     private FastScanner in;
     private PrintWriter out;
 
     public static void main(String[] args) throws IOException {
-        new AirlineCrews().solve();
+        new AirlineCrews().solve(); //need to change back to the original class name
     }
 
     public void solve() throws IOException {
@@ -31,6 +32,24 @@ public class AirlineCrews {
             for (int j = 0; j < numRight; ++j)
                 adjMatrix[i][j] = (in.nextInt() == 1);
         return adjMatrix;
+    }
+    
+    private HashMap<Integer, HashSet<Integer>> convertToLinkedList(boolean[][] bipartiteGraph)
+    {
+    	HashMap<Integer, HashSet<Integer>> listRepOfEdges = new HashMap<Integer, HashSet<Integer>>();
+    	HashSet<Integer> sourceEdges = new HashSet<Integer>();
+    	for (int i=0; i<bipartiteGraph.length; i++)
+    	{
+    	HashSet<Integer> edges = new HashSet<Integer>();
+    		for (int j=0; j<bipartiteGraph[0].length; j++)
+    		{
+    			if (bipartiteGraph[i][j]){
+    				edges.add(j+bipartiteGraph.length);
+    			}
+    		}
+    		listRepOfEdges.put(i, edges);
+    	}
+    	return listRepOfEdges ;
     }
 
     private int[] findMatching(boolean[][] bipartiteGraph) {
