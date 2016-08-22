@@ -54,16 +54,7 @@ public class AirlineCrews { // Need to change back to the original class name
 		  curVertex = priorVertex;
 		  
 	  }
-	  //System.out.println("------");
-	  /*
-	  int priorVertex = path.get(curVertex);
-	  HashSet<Integer> priorVertexEdges =  listEdges.get(priorVertex);
-	  HashSet<Integer> curVertexEdges = listEdges.get(curVertex);
-	  priorVertexEdges.remove(curVertex);
-	  curVertexEdges.add(priorVertex);
-	  this.flow.put(priorVertex, curVertex);
-	  this.flow.put(curVertex, -4);
-	  */
+
 	  	  
 	  return listEdges;
   }
