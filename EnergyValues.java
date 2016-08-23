@@ -41,10 +41,13 @@ class EnergyValues {
         // This algorithm selects the first free element.
         // You'll need to improve it to pass the problem.
         Position pivot_element = new Position(0, 0);
-        while (used_raws[pivot_element.raw])
-            ++pivot_element.raw;
+        
         while (used_columns[pivot_element.column])
             ++pivot_element.column;
+        
+        while (used_raws[pivot_element.raw]||a[pivot_element.raw][pivot_element.column]==0)
+            ++pivot_element.raw;
+        
         return pivot_element;
     }
 
@@ -67,9 +70,42 @@ class EnergyValues {
 
         pivot_element.raw = pivot_element.column;
     }
+    
+   
 
     static void ProcessPivotElement(double a[][], double b[], Position pivot_element) {
         // Write your code here
+    	
+    	double pivotConstant = a[pivot_element.raw][pivot_element.column];
+    	for (int i=0; i<a.length; i++)
+    	{
+    		a[pivot_element.raw][i] = a[pivot_element.raw][i]/pivotConstant;
+    		
+    	}
+    	b[pivot_element.raw] = b[pivot_element.raw]/pivotConstant;
+    	
+    	
+    	for (int i=0; i<pivot_element.raw; i++)
+    	{
+    		double rowConstant = a[i][pivot_element.column];
+    		for (int j=0; j<a.length; j++)
+    		{
+    			a[i][j] = a[i][j] - (rowConstant * a[pivot_element.raw][j]);
+    		}
+    		
+    		b[i] = b[i] - (rowConstant * b[pivot_element.raw]);
+    	}
+    	
+    	for (int i=pivot_element.raw+1; i<a.length; i++)
+    	{
+    		double rowConstant = a[i][pivot_element.column];
+    		for (int j=0; j<a.length; j++)
+    		{
+    			a[i][j] = a[i][j] - (rowConstant * a[pivot_element.raw][j]);
+    		}
+    		
+    		b[i] = b[i] - (rowConstant * b[pivot_element.raw]);
+    	}
     	
     }
 
@@ -91,6 +127,7 @@ class EnergyValues {
             ProcessPivotElement(a, b, pivot_element);
             MarkPivotElementUsed(pivot_element, used_raws, used_columns);
         }
+      
        
         return b;
     }
